@@ -83,7 +83,8 @@ namespace SNUpdater
         {
             foreach (var v in FindFilePath(KnownFolders.Downloads.DefaultPath, "*.zip"))
             {
-                Uncompress(v, KnownFolders.Downloads.DefaultPath);
+                if (v.Contains("SMBIOS"))
+                    Uncompress(v, KnownFolders.Downloads.DefaultPath);
             }
         }
 
@@ -179,6 +180,7 @@ namespace SNUpdater
             var folder = Path.GetDirectoryName(FilePath.FirstOrDefault());
             Trace.WriteLine(folder);
             var input = textBoxSN.Text;
+            Trace.WriteLine(input);
             WriteSN(Path.Combine(folder, SNBatch), input);
             Thread.Sleep(1000);
             ReadSN(Path.Combine(folder, ReadBatch));
@@ -188,6 +190,7 @@ namespace SNUpdater
                 labelResult.Visible = true;
                 labelResult.Text = "Write Serial Number Success";
                 labelResult.ForeColor = Color.Green;
+                MessageBox.Show("PASS");
             }
             else if (WriteProtect)
             {
@@ -196,6 +199,7 @@ namespace SNUpdater
                 labelResult.ForeColor = Color.Red;
                 labelFail.Visible = true;
                 labelFail.Text = "Reach write limit, please update BIOS";
+                MessageBox.Show("FAIL");
                 return;
             }
             else
@@ -203,6 +207,7 @@ namespace SNUpdater
                 labelResult.Visible = true;
                 labelResult.Text = "Write Serial Number FAIL";
                 labelResult.ForeColor = Color.Red;
+                MessageBox.Show("FAIL");
                 return;
             }
 
@@ -243,10 +248,9 @@ namespace SNUpdater
                     return;
                 }
 
-                var index = ReturnString.IndexOf('>');
-                textBoxSN.Text = ReturnString.Substring(index + 1, 12);
+                textBoxSN.Text = GetSnStringfromWeb(ReturnString);
                 buttonWriteSN_Click(null, null);
-                
+
             }
             catch(Exception ex)
             {
@@ -256,6 +260,22 @@ namespace SNUpdater
             {
                 buttonRun.Enabled = true;
             }
+        }
+
+        string GetSnStringfromWeb(string input)
+        {
+            if (input.Contains(@">"))
+            {
+                var index = input.IndexOf('>');
+                input = input.Substring(index + 1, 12);
+            }
+            else
+            {
+                input = input.Replace("SN:", "");
+                input = input.Trim();
+            }
+
+            return input;
         }
 
         private void buttonRun_EnabledChanged(object sender, EventArgs e)
