@@ -81,10 +81,10 @@ namespace SNUpdater
 
         public void Extract()
         {
-            foreach (var v in FindFilePath(KnownFolders.Downloads.DefaultPath, "*.zip"))
+            foreach (var v in FindFilePath(KnownFolders.Desktop.DefaultPath, "*.zip"))
             {
                 if (v.Contains("SMBIOS"))
-                    Uncompress(v, KnownFolders.Downloads.DefaultPath);
+                    Uncompress(v, KnownFolders.Desktop.DefaultPath);
             }
         }
 
@@ -173,7 +173,7 @@ namespace SNUpdater
         private void buttonWriteSN_Click(object sender, EventArgs e)
         {
             Extract();
-            var FilePath = FindFilePath(KnownFolders.Downloads.DefaultPath, ReadBatch);
+            var FilePath = FindFilePath(KnownFolders.Desktop.DefaultPath, ReadBatch);
             if (!FilePath.Any())
                 throw new Exception("SMBIOS tool not found");
 
